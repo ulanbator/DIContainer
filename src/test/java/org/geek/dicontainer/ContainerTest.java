@@ -11,6 +11,9 @@ import java.awt.*;
  */
 public class ContainerTest {
 
+    public interface Component{
+    }
+
 
     /**
      * 组件构造
@@ -18,11 +21,16 @@ public class ContainerTest {
     @Nested
     public class ComponentConstruction {
 
+        public class ComponentWithDefault implements Component{
+            public ComponentWithDefault() {
+            }
+        }
+
         /**
          * 无需构造的组件
          */
         @Test
-        public void test_component_construct_without_dependency() {
+        public void test_component_construction_without_dependency() throws NoSuchMethodException {
             Component component = new Component(){
             };
             Context context = new Context();
@@ -30,11 +38,22 @@ public class ContainerTest {
             Component contextComponent = context.get(Component.class);
             Assert.assertSame(component, contextComponent);
         }
+
+        /**
+         * 无依赖组件通过默认构造函数实现
+         */
+        @Test
+        public void test_component_construction_with_default_construction_function() throws NoSuchMethodException {
+            Context context = new Context();
+            context.bind(Component.class, ComponentWithDefault.class);
+            Component contextComponent = context.get(Component.class);
+            Assert.assertNotNull(contextComponent);
+        }
         // 构造失败的组件-抽象类、接口
         // 构造函数注入
         @Nested
         public class ConstructorInjection{
-            // TODO 无依赖组件通过默认构造函数实现
+
             // TODO 有依赖组件，通过Inject注解构造函数实现
             // TODO 所依赖的组件中也存在依赖，需要先实现依赖
             // TODO 依赖的组件和当前组件存在循环依赖，抛出异常
