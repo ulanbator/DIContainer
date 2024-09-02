@@ -4,16 +4,18 @@ import org.junit.Assert;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
-
 /**
  * 容器单元测试
  */
 public class ContainerTest {
 
-    public interface Component{
+    public interface Component {
     }
 
+    public static class ComponentWithDefault implements Component {
+        public ComponentWithDefault() {
+        }
+    }
 
     /**
      * 组件构造
@@ -21,17 +23,12 @@ public class ContainerTest {
     @Nested
     public class ComponentConstruction {
 
-        public class ComponentWithDefault implements Component{
-            public ComponentWithDefault() {
-            }
-        }
-
         /**
          * 无需构造的组件
          */
         @Test
         public void test_component_construction_without_dependency() throws NoSuchMethodException {
-            Component component = new Component(){
+            Component component = new Component() {
             };
             Context context = new Context();
             context.bind(Component.class, component);
@@ -46,13 +43,14 @@ public class ContainerTest {
         public void test_component_construction_with_default_construction_function() throws NoSuchMethodException {
             Context context = new Context();
             context.bind(Component.class, ComponentWithDefault.class);
-            Component contextComponent = context.get(Component.class);
+            Component contextComponent = context.get(ComponentWithDefault.class);
             Assert.assertNotNull(contextComponent);
         }
+
         // 构造失败的组件-抽象类、接口
         // 构造函数注入
         @Nested
-        public class ConstructorInjection{
+        public class ConstructorInjection {
 
             // TODO 有依赖组件，通过Inject注解构造函数实现
             // TODO 所依赖的组件中也存在依赖，需要先实现依赖
@@ -62,7 +60,7 @@ public class ContainerTest {
         }
 
         @Nested
-        public class FieldInjection{
+        public class FieldInjection {
             // 属性注入
             // TODO 单属性注入
             // TODO 多属性注入
@@ -73,7 +71,7 @@ public class ContainerTest {
             // TODO 字段为final，抛出异常
         }
 
-        public class FunctionInjection{
+        public class FunctionInjection {
             // 方法注入
             //TODO Inject标注方法，其参数为依赖对象
             //TODO Inject标注的无参方法，会被调用
